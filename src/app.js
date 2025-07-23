@@ -4,10 +4,12 @@ const DBConnect= require("../config/DataBase.js");
 const userModule = require("../models/user.js")
 const validateSignUpData = require("../utils/validation.js")
 const bcrypt = require("bcrypt");
+const cookieParser= require("cookie-parser")
+const jwt = require("jsonwebtoken");
 
 const app = express();
 app.use(express.json())
-
+app.use(cookieParser())
 
 app.post("/signup" ,async(req,res)=>{
 console.log(req.body)
@@ -47,7 +49,8 @@ res.send("user added")}
 
 
 app.post("/login", async (req, res) => {
-  console.log(req.body);
+
+  try{console.log(req.body);
   const {emailId,password}= req.body;
   const checkingUser = await userModule.findOne({emailId:req.body.emailId});
   console.log(checkingUser)
@@ -63,13 +66,17 @@ if (!isPasswordCorrect) {
   return res.status(401).send("Invalid password");
 }
 
+var token = await jwt.sign({_id:checkingUser._id}, 'CONNECTIONdemo123@');
+ res.cookie("token",token)
+
+
 res.send("Login successful");
-})
-
-
-
-
-
+}
+  catch (err) {
+    console.error("Login failed:", err.message);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 
 
@@ -90,9 +97,19 @@ const users = await userModule.find(req.body);
 
 
 
-app.get ("/findingUser",async (req,res)=>{
-   const alluser= await userModule.find() ;
-   res.send(alluser)
+app.get ("/profile",async (req,res)=>{
+    const token = req.cookies.token;
+    
+     if (!token) return res.status(401).send("Token not found");
+   var decoded =  jwt.verify(token, 'CONNECTIONdemo123@');
+    console.log(decoded)
+   const user= await userModule.findById(decoded._id) ;
+     if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    res.send(user);
+  
 })
 
 
