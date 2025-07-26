@@ -1,124 +1,48 @@
 const express = require("express");
-const {AdminAuth,UserAuth}=require("../middlewares/authentication.js")
-const DBConnect= require("../config/DataBase.js");
-const userModule = require("../models/user.js")
-const validateSignUpData = require("../utils/validation.js")
-const bcrypt = require("bcrypt");
+
+const DBConnect= require("./config/DataBase.js");
+const userModule = require("./models/user.js")
 const cookieParser= require("cookie-parser")
-const jwt = require("jsonwebtoken");
+const userAuth = require("./middlewares/authentication.js")
+
+const authRouter = require('./routes/auth.js');
+const profileRouter = require("./routes/profile.js");
 
 const app = express();
 app.use(express.json())
 app.use(cookieParser())
 
-app.post("/signup" ,async(req,res)=>{
-console.log(req.body)
-try{
-    validateSignUpData(req);
-    
-    
-    
-  let {firstName ,lastName,emailId,password,gender} = req.body;
-   
-  
-  const saltRounds = 10;
-     const myPlaintextPassword = password;
-     const passwordHash = await bcrypt.hash(myPlaintextPassword, saltRounds);
-        // Store hash in your password DB.    
-        console.log("Hash password:" ,passwordHash)
-
-       password = passwordHash;
-    
-    // Store hash in your password DB.
-
-
-  //creating a new instance of userModule with the data from the request body
-// and saving it to the database  
-    const user = new userModule({firstName ,lastName,emailId,password,gender});
-await user.save();
-res.send("user added")}
- catch (err) {
-    console.error("Validation failed:", err.message);
-    res.status(404).send({ error: err.message })
-}});
+app.use("/",authRouter,profileRouter )
 
 
 
 
-
-
-
-app.post("/login", async (req, res) => {
-
-  try{console.log(req.body);
-  const {emailId,password}= req.body;
-  const checkingUser = await userModule.findOne({emailId:req.body.emailId});
-  console.log(checkingUser)
-  if(!checkingUser){
-    res.send("user not register ")
-  } 
- 
-  const isPasswordCorrect = await bcrypt.compare(password, checkingUser.password);
-   // res.send("got crerdential- user logged in  ");
-  // console.log(isPasswordCorrect)
-    
-if (!isPasswordCorrect) {
-  return res.status(401).send("Invalid password");
-}
-
-var token = await jwt.sign({_id:checkingUser._id}, 'CONNECTIONdemo123@');
- res.cookie("token",token)
-
-
-res.send("Login successful");
-}
-  catch (err) {
-    console.error("Login failed:", err.message);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-
-
-app.get("/feed",async(req, res)=>{
-console.log(req.body)
-const users = await userModule.find(req.body); 
-   
-        if(users.length>0){
-        res.send(users)}
-    else{res.send("User not find")
-
-    }}
-    
-)
-
-
-
-
-
-
-app.get ("/profile",async (req,res)=>{
-    const token = req.cookies.token;
-    
-     if (!token) return res.status(401).send("Token not found");
-   var decoded =  jwt.verify(token, 'CONNECTIONdemo123@');
-    console.log(decoded)
-   const user= await userModule.findById(decoded._id) ;
-     if (!user) {
-      return res.status(404).send("User not found");
-    }
-
-    res.send(user);
-  
+app.post("/SendConnectionRequest",userAuth,(req,res)=>{
+res.send("connection request sent")
 })
 
 
 
+// app.patch("/user/:userId" ,userAuth,async(req,res)=>{
+//     const userId = req.params.userId;
+//     const data = req.body;
+    
+//     try {
+//         const ALLOWED_UPDATES = ["firstName", "lastName", "emailId", "password", "age", "gender", "photoUrl", "about", "skills"];
+//         const is_update_allowed = Object.keys(data).eyery((keys)=>ALLOWED_UPDATES.include(keys));
+//         if (!is_update_allowed) {
+//             throw new Error("update not allowed");
+//         }
+//         const updatedUser = await userModule.findByIdAndUpdate(userId, data, { runValidators: true, returnDocument: "after" });
 
+//         res.send("user is updated");
+//     } catch (err) {
+//         res.status(404).send(err.message);
+//     }
+// })
 
-
-app.get("/allUser",async(req, res)=>{
-console.log(req.body)
+app.get("/allUser", async (req, res) => {
+    console.log(req.body);
 const users = await userModule.findOne(req.body); 
         
         if(users==null){
@@ -128,10 +52,6 @@ const users = await userModule.findOne(req.body);
     }}
        
 )
-
-
-
-
 
 
 app.patch("/user/:user_id",async(req,res)=>{
@@ -151,6 +71,9 @@ app.patch("/user/:user_id",async(req,res)=>{
    
     
 })
+
+
+
 DBConnect().then(()=>{console.log("connection to the db");app.listen(3000,()=>{
     console.log("Server is running on port 3000")} )}).catch((err)=>{"Not connected ",err});
 
