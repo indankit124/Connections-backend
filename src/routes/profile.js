@@ -2,7 +2,9 @@ const express = require("express")
 const profileRouter  = express.Router();
 const userModule = require("../models/user.js")
 const userAuth = require("../middlewares/authentication.js")
-const validateSignUpData = require("../../utils/validation.js")
+
+const {validatePasswordChange}= require("../../utils/validation.js")
+const bcrypt = require("bcrypt");
 
 profileRouter.get ("/profile/view",userAuth, async (req,res)=>{
  try{ //   const token = req.cookies.token;
@@ -46,30 +48,35 @@ catch(err){
 }  
 })
 
-profileRouter.patch("/profile/changePassword",userAuth,(req,res)=>{
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  const {token}= req.cookies;
-    
-if (!token) {
-      return res.status(401).send("Access Denied: No token provided.");
-    }
 
- var decoded =  jwt.verify(token, 'CONNECTIONdemo123@');
-const{_id}= decoded;
 
-const user = await userModule.findById(_id);
-if(!user){throw new Error("user id is not available !!")}
-req.user =user;
-})
+profileRouter.patch("/profile/changePassword",userAuth,async(req,res)=>{
+ try {const user=req.user;
+  console.log(user)
+  let{oldPassword,newPassword}= req.body;
+  validatePasswordChange(newPassword);
+  if(!oldPassword||!newPassword){
+   return  res.send("you need to provide both old and new passwords")
+  }
+ const checkingOldPassword= await bcrypt.compare(oldPassword, user.password );
+ if(!checkingOldPassword){
+ return  res.send("oldPassword is not correct")
+ }
+
+//  validateNewPassword(newPassword)
+
+ const newPasswordHash = await bcrypt.hash(newPassword, 10 )
+ await userModule.findByIdAndUpdate(user._id, { password:newPasswordHash },{runValidators:true});
+ res.clearCookie("token");
+ res.send("password is changed  & user has logged out ")
+ console.log("password is changed")
+ 
+   
+}
+catch (err) {
+        console.error("Error changing password:", err);
+        res.status(500).send({ "error":err.message });
+    }})
 
 module.exports = profileRouter;
 

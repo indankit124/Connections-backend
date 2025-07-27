@@ -3,7 +3,7 @@ const authRouter =express.Router();
 const cookieParser= require("cookie-parser")
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const validateSignUpData = require("../../utils/validation.js")
+const {validateSignUpData} = require("../../utils/validation.js")
 const userModule = require("../models/user.js")
  
 

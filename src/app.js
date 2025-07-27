@@ -7,12 +7,12 @@ const userAuth = require("./middlewares/authentication.js")
 
 const authRouter = require('./routes/auth.js');
 const profileRouter = require("./routes/profile.js");
-
+const requestRouter = require("./routes/request.js")
 const app = express();
 app.use(express.json())
 app.use(cookieParser())
 
-app.use("/",authRouter,profileRouter )
+app.use("/",authRouter,profileRouter,requestRouter )
 
 
 

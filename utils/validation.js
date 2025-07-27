@@ -7,6 +7,13 @@ const validateSignUpData =(req)=>{
     if(!firstName || !lastName){throw new Error("Name is not Valid")}
     else if (!validator.isEmail(emailId)){throw new Error("eneter a valid email id")}
     else if (!validator.isStrongPassword(password)){throw new Error("Enter a Strong Password")}
-}
+};
 
-module.exports= validateSignUpData
+
+
+const validatePasswordChange =(newPassword)=>{
+    
+
+    if (!validator.isStrongPassword(newPassword)){throw new Error("Enter a Strong Password")}
+}
+module.exports= {validateSignUpData,validatePasswordChange}

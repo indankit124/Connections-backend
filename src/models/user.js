@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
         }}},
         lastName:{type:String},
         emailId:{type:String , required:true, unique:true,trim:true,lowercase:true, validate(value){if(!validator.isEmail(value)){throw new Error("enter valid email id ")}}},
-        password:{type:String, required:true,minLength:6,maxLength:105},
+        password:{type:String, required:true,minLength:6,maxLength:105,validate(value){if(!validator.isStrongPassword(value)){throw new Error("enter strong password")}}},
         age:{type:Number, min :18,max:120},
         gender:{type:String,required:true,validate(value){if(!["male","female","others"].includes(value.toLowerCase())){throw new Error("invalid error")}
         }},
