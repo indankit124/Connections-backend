@@ -3,7 +3,7 @@ const validator = require('validator')
 
 const userSchema = new mongoose.Schema({
     firstName:{
-        type: String,validate(value){if(value.length<4){throw new Error("name is too short not valid");
+        type: String,index:true,validate(value){if(value.length<4){throw new Error("name is too short not valid");
         }}},
         lastName:{type:String},
         emailId:{type:String , required:true, unique:true,trim:true,lowercase:true, validate(value){if(!validator.isEmail(value)){throw new Error("enter valid email id ")}}},

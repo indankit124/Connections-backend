@@ -17,9 +17,9 @@ app.use("/",authRouter,profileRouter,requestRouter )
 
 
 
-app.post("/SendConnectionRequest",userAuth,(req,res)=>{
-res.send("connection request sent")
-})
+// app.post("/SendConnectionRequest",userAuth,(req,res)=>{
+// res.send("connection request sent")
+// })
 
 
 
@@ -41,17 +41,17 @@ res.send("connection request sent")
 //     }
 // })
 
-app.get("/allUser", async (req, res) => {
-    console.log(req.body);
-const users = await userModule.findOne(req.body); 
+// app.get("/allUser", async (req, res) => {
+//     console.log(req.body);
+// const users = await userModule.findOne(req.body); 
         
-        if(users==null){
-        res.send("User not find")}
-    else{res.send(users)
+//         if(users==null){
+//         res.send("User not find")}
+//     else{res.send(users)
   
-    }}
+//     }}
        
-)
+// )
 
 
 app.patch("/user/:user_id",async(req,res)=>{
