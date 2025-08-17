@@ -7,8 +7,8 @@ const {validateSignUpData} = require("../../utils/validation.js")
 const userModule = require("../models/user.js")
  
 
-authRouter.use(express.json())
-authRouter.use(cookieParser())
+// authRouter.use(express.json())
+// authRouter.use(cookieParser())
 
 
 authRouter.post("/signup" ,async(req,res)=>{

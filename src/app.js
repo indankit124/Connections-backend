@@ -18,23 +18,21 @@ app.use("/",authRouter,profileRouter,requestRouter,userRouter )
 
 
 
-app.patch("/user/:user_id",async(req,res)=>{
+// app.patch("/user/:user_id",async(req,res)=>{
     
-   const data= req.body;
-   const  userId= req.params.user_id;
-    try{
-    const ALLOWED_UPDADTES=["firstName","lastName","password","age","gender","photoUrl","about","skills"];
-    const is_update_allowed = Object.keys(data).every((k)=>ALLOWED_UPDADTES.includes(k))   ;
-     if(!is_update_allowed){
-        throw new Error("update not allowed")
-     }
-    const updatedUser = await userModule.findByIdAndUpdate(userId ,data,{runValidators:true,returnDocument:"after"});
+   // const data= req.body;
+   // const  userId= req.params.user_id;
+   //  try{
+   //  const ALLOWED_UPDADTES=["firstName","lastName","password","age","gender","photoUrl","about","skills"];
+   //  const is_update_allowed = Object.keys(data).every((k)=>ALLOWED_UPDADTES.includes(k))   ;
+   //   if(!is_update_allowed){
+   //      throw new Error("update not allowed")
+   //   }
+   //  const updatedUser = await userModule.findByIdAndUpdate(userId ,data,{runValidators:true,returnDocument:"after"});
    
-    res.send("user is updated")}
-    catch(err){res.status(404).send(err.message)}
-   
-    
-})
+   //  res.send("user is updated")}
+   //  catch(err){res.status(404).send(err.message)}    
+   // })
 
 
 

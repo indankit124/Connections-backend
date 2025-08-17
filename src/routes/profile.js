@@ -7,18 +7,9 @@ const {validatePasswordChange}= require("../../utils/validation.js")
 const bcrypt = require("bcrypt");
 
 profileRouter.get ("/profile/view",userAuth, async (req,res)=>{
- try{ //   const token = req.cookies.token;
-    
-  //    if (!token) return res.status(401).send("Token not found");
-  //  var decoded =  jwt.verify(token, 'CONNECTIONdemo123@');
-  //   console.log(decoded)
-
-  //  const user= await userModule.find(req.body.emailId) ;
-  //    if (!user) {
-  //     return res.status(404).send("User not found");
-  //   } 
+ try{ 
    const user= req.user;
-  //  console.log("this is user ",user._id)
+
     res.send(user);
   }
 
