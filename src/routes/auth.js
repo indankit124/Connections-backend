@@ -46,7 +46,7 @@ res.send("user added")}
 authRouter.post("/login", async (req, res) => {
 
   try{console.log(req.body);
-  const {emailId,password}= req.body;
+  const {password}= req.body;
   const checkingUser = await userModule.findOne({emailId:req.body.emailId});
   console.log(checkingUser)
   if(!checkingUser){

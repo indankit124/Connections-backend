@@ -2,7 +2,7 @@ const express = require("express")
 const requestRouter = express.Router();
 const userAuth =require("../middlewares/authentication");
 const ConnectionRequestModel= require("../models/connectionRequest");
-const { status } = require("express/lib/response");
+
 const userModule = require("../models/user")
 
 requestRouter.post("/request/send/:status/:toUserId",userAuth,async(req,res)=>{
@@ -90,12 +90,13 @@ requestRouter.post("/request/review/:status/:requestId", userAuth, async (req, r
     }
 
     if (status === "rejected") {
-      await ConnectionRequestModel.findByIdAndDelete(requestId);
-      return res.status(200).send("Request rejected");
+      await ConnectionRequestModel.findByIdAndDelete(requestId,{ status: "rejected" });
+
     }
 
     if (status === "accepted") {
       await ConnectionRequestModel.findByIdAndUpdate(requestId, { status: "accepted" });
+   
       return res.status(200).send("Request accepted");
     }
 
