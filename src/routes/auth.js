@@ -36,7 +36,7 @@ try{
 // and saving it to the database  
     const user = new userModule({firstName ,lastName,emailId,password,gender});
 await user.save();
-res.send("user added")}
+res.send(user)}
  catch (err) {
     console.error("Validation failed:", err.message);
     res.status(404).send({ error: err.message })
@@ -65,7 +65,7 @@ var token = jwt.sign({ _id: checkingUser._id }, 'CONNECTIONdemo123@', { expiresI
  res.cookie("token",token)
 
 
-res.send("Login successful");
+res.send(checkingUser);
 }
   catch (err) {
     console.error("Login failed:", err.message);

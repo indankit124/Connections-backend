@@ -73,7 +73,7 @@ userRouter.get("/user/feed",userAuth,async(req,res)=>{
     let users = await userModule.find({
        $and:[ {_id:{$nin:Array.from(hideInTheFeed)}},{_id:{$ne:loggedInUserId}}]
     }).select("firstName lastName gender photoUrl about skills  ").skip(skip).limit(limit)
-   // console.log(users)
+
 
   res.send(users)
    } catch (error) {
