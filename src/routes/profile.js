@@ -20,24 +20,42 @@ catch(err){
 });
 
 
+profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
+  try {
+    const data = req.body;
+    const user = req.user;
 
-profileRouter.patch("/profile/edit",userAuth,async (req,res)=>{
- try{ const data= req.body;
-  const user= req.user;
-  //validateSignUpData(req)
-  const ALLOWED_UPDATE= ["firstName","lastName","age","gender","about","skills"];
-  const to_update_data =Object.keys(data).every((keys)=>ALLOWED_UPDATE.includes(keys));
-  console.log(to_update_data)
-  if(!to_update_data){throw new Error("update not allowed")}
-  await userModule.findByIdAndUpdate(user._id, data ,{runValidators:true});
-res.send("profile is updated")
-}
-catch(err){
-  console.error("Error upadting profile:", err.message);
-    res.status(500).send({ "Error":err.message  });
-  
-}  
-})
+    const ALLOWED_UPDATE = [
+      "firstName",
+      "lastName",
+      "age",
+      "gender",
+      "about",
+      "skills",
+      "photoUrl",
+      "currentJob",
+    ];
+
+    const isAllowed = Object.keys(data).every((key) =>
+      ALLOWED_UPDATE.includes(key)
+    );
+    if (!isAllowed) {
+      throw new Error("Update not allowed");
+    }
+
+    // return updated document
+    const updatedUser = await userModule.findByIdAndUpdate(
+      user._id,
+      data,
+      { new: true, runValidators: true }
+    );
+
+    res.json(updatedUser); // ✅ send back full updated user
+  } catch (err) {
+    console.error("Error updating profile:", err.message);
+    res.status(500).send({ error: err.message });
+  }
+});
 
 
 

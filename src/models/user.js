@@ -12,8 +12,9 @@ const userSchema = new mongoose.Schema({
         gender:{type:String,required:true,validate(value){if(!["male","female","others"].includes(value.toLowerCase())){throw new Error("invalid error")}
         }},
         photoUrl:{type:String,default:"https://cdn.pixabay.com/photo/2015/03/04/22/35/avatar-659651_1280.png",validate(value){if(!validator.isURL(value)){throw new Error("invalid photo url")}}},
-        about:{type:String,default:"this is a default about String"},
-        skills:{type:[String],default:[]}
+        about:{type:String,default:""},
+        skills:{type:[String],default:[]},
+        currentJob:{type:String,default:"not working currently"},
 },{timestamps:true}
 );  
 
