@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
         age:{type:Number, min :18,max:120},
         gender:{type:String,required:true,validate(value){if(!["male","female","others"].includes(value.toLowerCase())){throw new Error("invalid error")}
         }},
-        photoUrl:{type:String,default:"https://cdn.pixabay.com/photo/2015/03/04/22/35/avatar-659651_1280.png",validate(value){if(!validator.isURL(value)){throw new Error("invalid photo url")}}},
+        photoUrl:{type:String,default:"https://t4.ftcdn.net/jpg/12/60/10/45/360_F_1260104521_e83wrn9qiiPRovfltsD38EEoc38K2eYJ.jpg",validate(value){if(!validator.isURL(value)){throw new Error("invalid photo url")}}},
         about:{type:String,default:""},
         skills:{type:[String],default:[]},
         currentJob:{type:String,default:"not working currently"},
