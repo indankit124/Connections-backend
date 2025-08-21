@@ -4,65 +4,51 @@ const userAuth =require("../middlewares/authentication");
 const ConnectionRequestModel= require("../models/connectionRequest");
 
 const userModule = require("../models/user")
+requestRouter.post("/request/send/:status/:toUserId", userAuth, async (req, res) => {
+  try {
+    const fromUserId = req.user._id;
+    const toUserId = req.params.toUserId;
+    const status = req.params.status;
 
-requestRouter.post("/request/send/:status/:toUserId",userAuth,async(req,res)=>{
-try {
-    const fromUserId=req.user._id;
-    // console.log(fromUserId)
-    const toUserId= req.params.toUserId;
-    const status =req.params.status;
-
-
-  const doesToUserExists= await userModule.findById(toUserId);
-  if(!doesToUserExists){
-    return res.status(404).send("user does not exists");
-  } 
-
-
-
-    if(fromUserId.toString() === toUserId.toString()){
-        return res.send("you cannot send request to your self ")
-    }
-    
-
-
-    const ALLOWED_STATUS=["ignored","interested"]
-    if(!ALLOWED_STATUS.includes(status)){
-        return res.status(400).send("invalid request type")
+    const doesToUserExists = await userModule.findById(toUserId);
+    if (!doesToUserExists) {
+      return res.status(404).json({ message: "User does not exist" });
     }
 
-
-
-
-    const alreadySentRequest =await ConnectionRequestModel.findOne({
-        fromUserId,toUserId
-    })
-    if(alreadySentRequest){
-       return res.status(409).send("connection request is already been sent");
+    if (fromUserId.toString() === toUserId.toString()) {
+      return res.status(400).json({ message: "You cannot send request to yourself" });
     }
 
-
-    
-   const existingConnectionRequest = await ConnectionRequestModel.findOne({
-    toUserId:req.user,
-     fromUserId:req.params.toUserId
-   })
-   if(existingConnectionRequest){
-      return  res.send("connection request is already pending");
+    const ALLOWED_STATUS = ["ignored", "interested"];
+    if (!ALLOWED_STATUS.includes(status)) {
+      return res.status(400).json({ message: "Invalid request type" });
     }
 
-    
-    const connectionRequest = new ConnectionRequestModel({fromUserId,toUserId,status});
-    const data=await connectionRequest.save()
-    //res.send(connectionRequest)
-    res.json({message:req.user.firstName+" is "+status+" in "+doesToUserExists.firstName , data})
-} 
+    const alreadySentRequest = await ConnectionRequestModel.findOne({ fromUserId, toUserId });
+    if (alreadySentRequest) {
+      return res.status(409).json({ message: "Connection request has already been sent" });
+    }
 
-catch (error) {
+    const existingConnectionRequest = await ConnectionRequestModel.findOne({
+      toUserId: req.user,
+      fromUserId: req.params.toUserId
+    });
+    if (existingConnectionRequest) {
+      return res.status(400).json({ message: "Connection request is already pending" });
+    }
+
+    const connectionRequest = new ConnectionRequestModel({ fromUserId, toUserId, status });
+    const data = await connectionRequest.save();
+
+    return res.json({
+      message: `${req.user.firstName} is ${status} in ${doesToUserExists.firstName}`,
+      data
+    });
+  } catch (error) {
     console.error("Validation failed:", error.message);
-    res.status(500).send({ error: error.message }) 
-}
-})
+    res.status(500).json({ error: error.message });
+  }
+});
 
 
 

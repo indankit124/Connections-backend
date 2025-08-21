@@ -16,7 +16,7 @@ userRouter.get("/user/connections",userAuth,async(req,res)=>{
          }
      ).populate("fromUserId", "firstName lastName photoUrl").populate("toUserId", "firstName lastName photoUrl")
      if(getingTheAcceptedConnections.length===0){
-         return res.send("there are no accepted connection request")
+         return res.status(200).json({ message: "no accepted connection requests", data: [] });
      }
    data= getingTheAcceptedConnections.map(value=>{if(value.fromUserId.equals(loggedInUserId)){
         return value.toUserId
